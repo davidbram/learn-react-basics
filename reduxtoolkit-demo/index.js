@@ -4,8 +4,8 @@ const BUTTON_CLICKED = "BUTTON_CLICKED";
 const DIV_VISIBLE = "DIV_VISIBLE";
 
 const initialState = {
-  buttonVisible: "no",
-  divVisible: "no",
+  buttonVisible: false,
+  divVisible: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -13,12 +13,12 @@ const rootReducer = (state = initialState, action) => {
     case BUTTON_CLICKED:
       return {
         ...state,
-        buttonVisible: "yes",
+        buttonVisible: action.payload,
       };
     case DIV_VISIBLE:
       return {
         ...state,
-        divVisible: "yes",
+        divVisible: action.payload,
       };
     default:
       return state;
@@ -28,22 +28,30 @@ const rootReducer = (state = initialState, action) => {
 const store = createStore(rootReducer);
 
 store.subscribe(() => {
-  console.log(store.getState());
-  if (store.getState().divVisible === "yes") {
-    const div = document.getElementById("my-div");
+  const div = document.getElementById("my-div");
+  if (store.getState().divVisible) {
     div.style.display = "block";
+  }
+  else {
+    div.style.display = "none";
   }
 });
 
 const myButton = document.getElementById("my-button");
 myButton.addEventListener("click", function () {
-  const buttonClickedAction = {
-    type: BUTTON_CLICKED,
+  const buttonClickedAction = visible => {
+   return {
+     type: BUTTON_CLICKED,
+     payload: visible
+  };
+}
+  const divVisibleAction = visible => {
+    return {
+      type: DIV_VISIBLE,
+      payload: visible
+    }
   };
 
-  const divVisibleAction = {
-    type: DIV_VISIBLE,
-  };
-  store.dispatch(buttonClickedAction);
-  store.dispatch(divVisibleAction);
+  store.dispatch(buttonClickedAction(!store.getState().buttonClicked));
+  store.dispatch(divVisibleAction(!store.getState().divVisible));
 });
